@@ -21,45 +21,50 @@ type BuildStats struct {
 }
 
 func Build() (string, error) {
-	buildStats.IsBuildingLock.RLock()
-	if !buildStats.IsBuilding {
-		buildStats.IsBuildingLock.RUnlock()
-		setIsBuildung(true)
+	if !buildStats.getIsBuilding() {
+		buildStats.setIsBuilding(true)
 		cmd := exec.Command("go", "build", "-o", filenames.BinaryName)
 		output, err := cmd.CombinedOutput()
-		setIsBuildung(false)
+		buildStats.setIsBuilding(false)
 		if err != nil {
 			return string(output), err
 		}
 		return finishBuild()
 	} else {
-		buildStats.IsBuildingLock.RUnlock()
-		setShouldBuild(true)
+		buildStats.setShouldBuild(true)
 		return "", BuildAlreayUnderWayError
 	}
 }
 
 func finishBuild() (string, error) {
 	// See if another build was scheduled while we built.
-	buildStats.ShouldBuildLock.RLock()
-	if buildStats.ShouldBuild {
-		buildStats.ShouldBuildLock.RUnlock()
-		setShouldBuild(false)
+	if buildStats.getShouldBuild() {
+		buildStats.setShouldBuild(false)
 		return Build()
-	} else {
-		buildStats.ShouldBuildLock.RUnlock()
 	}
 	return "", nil
 }
 
-func setIsBuildung(isBuilding bool) {
-	buildStats.IsBuildingLock.Lock()
-	buildStats.IsBuilding = isBuilding
-	buildStats.IsBuildingLock.Unlock()
+func (bs *BuildStats) setIsBuilding(isBuilding bool) {
+	bs.IsBuildingLock.Lock()
+	bs.IsBuilding = isBuilding
+	bs.IsBuildingLock.Unlock()
 }
 
-func setShouldBuild(shouldBuild bool) {
-	buildStats.ShouldBuildLock.Lock()
-	buildStats.ShouldBuild = shouldBuild
-	buildStats.ShouldBuildLock.Unlock()
+func (bs *BuildStats) getIsBuilding() bool {
+	bs.IsBuildingLock.RLock()
+	defer bs.IsBuildingLock.RUnlock()
+	return bs.IsBuilding
+}
+
+func (bs *BuildStats) setShouldBuild(shouldBuild bool) {
+	bs.ShouldBuildLock.Lock()
+	bs.ShouldBuild = shouldBuild
+	bs.ShouldBuildLock.Unlock()
+}
+
+func (bs *BuildStats) getShouldBuild() bool {
+	bs.ShouldBuildLock.RLock()
+	defer bs.ShouldBuildLock.RUnlock()
+	return bs.ShouldBuild
 }
