@@ -30,7 +30,7 @@ func Run() error {
 			return err
 		}
 	}
-	binary.cmd = exec.Command(filepath.Join(filenames.WorkingDirectory, "klaus-bin"))
+	binary.cmd = exec.Command(filepath.Join(filenames.WorkingDirectory, filenames.BinaryName))
 	stdout, err := binary.cmd.StdoutPipe()
 	if err != nil {
 		return err
@@ -46,6 +46,5 @@ func Run() error {
 		return err
 	}
 	go binary.cmd.Wait()
-	log.Println("Process started.")
 	return nil
 }

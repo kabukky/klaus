@@ -67,7 +67,7 @@ func rebuild() {
 			log.Println("\033[92mBuild completed successfully.\033[0m")
 			err := runner.Run()
 			if err != nil {
-				log.Printf("\033[91mCould not run binary:\033[0m %s", err)
+				log.Printf("\033[91mCould not start binary:\033[0m %s", err.Error())
 			}
 		}
 	}()
