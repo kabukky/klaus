@@ -46,5 +46,6 @@ func Run() error {
 		return err
 	}
 	go binary.cmd.Wait()
+	log.Println("Starting process.")
 	return nil
 }
