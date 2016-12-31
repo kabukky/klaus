@@ -24,23 +24,17 @@ func Build() (string, error) {
 	buildStats.IsBuildingLock.RLock()
 	if !buildStats.IsBuilding {
 		buildStats.IsBuildingLock.RUnlock()
-		buildStats.IsBuildingLock.Lock()
-		buildStats.IsBuilding = true
-		buildStats.IsBuildingLock.Unlock()
+		setIsBuildung(true)
 		cmd := exec.Command("go", "build", "-o", filenames.BinaryName)
 		output, err := cmd.CombinedOutput()
-		buildStats.IsBuildingLock.Lock()
-		buildStats.IsBuilding = false
-		buildStats.IsBuildingLock.Unlock()
+		setIsBuildung(false)
 		if err != nil {
 			return string(output), err
 		}
 		return finishBuild()
 	} else {
 		buildStats.IsBuildingLock.RUnlock()
-		buildStats.ShouldBuildLock.Lock()
-		buildStats.ShouldBuild = true
-		buildStats.ShouldBuildLock.Unlock()
+		setShouldBuild(true)
 		return "", BuildAlreayUnderWayError
 	}
 }
@@ -50,12 +44,22 @@ func finishBuild() (string, error) {
 	buildStats.ShouldBuildLock.RLock()
 	if buildStats.ShouldBuild {
 		buildStats.ShouldBuildLock.RUnlock()
-		buildStats.ShouldBuildLock.Lock()
-		buildStats.ShouldBuild = false
-		buildStats.ShouldBuildLock.Unlock()
+		setShouldBuild(false)
 		return Build()
 	} else {
 		buildStats.ShouldBuildLock.RUnlock()
 	}
 	return "", nil
+}
+
+func setIsBuildung(isBuilding bool) {
+	buildStats.IsBuildingLock.Lock()
+	buildStats.IsBuilding = isBuilding
+	buildStats.IsBuildingLock.Unlock()
+}
+
+func setShouldBuild(shouldBuild bool) {
+	buildStats.ShouldBuildLock.Lock()
+	buildStats.ShouldBuild = shouldBuild
+	buildStats.ShouldBuildLock.Unlock()
 }
