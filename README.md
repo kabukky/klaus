@@ -1,6 +1,6 @@
 # Klaus
 
-[![Build Status](https://travis-ci.org/dabeck/klaus.svg?branch=master)](https://travis-ci.org/dabeck/klaus)
+[![Build Status](https://travis-ci.org/kabukky/klaus.svg?branch=master)](https://travis-ci.org/kabukky/klaus)
 
 This service is intended as go file-watcher.
 
@@ -9,7 +9,7 @@ Just use the "klaus" serivce as Docker base image and put your go-Files into "/g
 Example use:
 
 ```
-FROM klaus
+FROM kaih/klaus
 
 WORKDIR /go/src/myproject
 
