@@ -13,3 +13,5 @@ WORKDIR /go/src/myproject
 
 COPY ./src/myproject ./
 ```
+
+This should NOT used as production environment!
