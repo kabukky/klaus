@@ -31,7 +31,7 @@ func WatchRecursively(path string, ignoreDirs []string) error {
 	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			for _, d := range ignoreDirs {
-				if d == info.Name() {
+				if path != filePath && d == info.Name() {
 					return filepath.SkipDir
 				}
 			}
