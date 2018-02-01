@@ -9,6 +9,7 @@ import (
 
 	"github.com/kabukky/klaus/builder"
 	"github.com/kabukky/klaus/helper"
+	"github.com/kabukky/klaus/klausignore"
 	"github.com/kabukky/klaus/runner"
 )
 
@@ -25,10 +26,16 @@ func init() {
 	}
 }
 
-func WatchRecursively(path string) error {
+func WatchRecursively(path string, ignoreDirs []string) error {
 	// Watch root directory and all subdirectories in the given path
 	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
+			for _, d := range ignoreDirs {
+				if d == info.Name() {
+					return filepath.SkipDir
+				}
+			}
+
 			err := Watcher.Add(filePath)
 			if err != nil {
 				return err
@@ -88,7 +95,7 @@ func newWatcher() (*fsnotify.Watcher, error) {
 				} else if event.Op&fsnotify.Create == fsnotify.Create {
 					if helper.IsDirectory(event.Name) {
 						// A new directory was created. Watch it.
-						err := WatchRecursively(event.Name)
+						err := WatchRecursively(event.Name, klausignore.Ignore)
 						if err != nil {
 							log.Println("Error while while trying to add created directory to watcher:", err)
 						}
