@@ -19,4 +19,4 @@ WORKDIR /go/src/myproject
 COPY ./src/myproject ./
 ```
 
-This should NOT used as production environment!
+This should NOT used in a production environment!
