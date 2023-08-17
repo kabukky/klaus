@@ -23,7 +23,7 @@ type BuildStats struct {
 func Build() (string, error) {
 	if !buildStats.getIsBuilding() {
 		buildStats.setIsBuilding(true)
-		cmd := exec.Command("go", "build", "-i", "-o", filenames.BinaryName)
+		cmd := exec.Command("go", "build", "-o", filenames.BinaryName)
 		output, err := cmd.CombinedOutput()
 		buildStats.setIsBuilding(false)
 		if err != nil {
