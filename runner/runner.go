@@ -30,7 +30,7 @@ func Run() error {
 			log.Println("Couldn't kill process:", err)
 		}
 	}
-	binary.cmd = exec.Command(filepath.Join(filenames.WorkingDirectory, filenames.BinaryName))
+	binary.cmd = exec.Command(filepath.Join(filenames.WorkingDirectory, filenames.BinaryName), os.Args[1:]...)
 	stdout, err := binary.cmd.StdoutPipe()
 	if err != nil {
 		return err
